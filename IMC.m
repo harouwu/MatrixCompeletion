@@ -1,4 +1,4 @@
-function [W, H, time] = IMC(R, X, Y, k, lambda, maxiter, WInit, HInit)
+function [W, H, losses] = IMC(R, X, Y, k, lambda, maxiter, WInit, HInit)
 % 
 % Inductive Matrix Completion (IMC) using squared loss: 
 %
@@ -28,6 +28,8 @@ function [W, H, time] = IMC(R, X, Y, k, lambda, maxiter, WInit, HInit)
 % For any questions and comments, please send your email to
 % Nagarajan Natarajan <naga86@cs.utexas.edu> or Donghyuk Shin <dshin@cs.utexas.edu>.
 %
+    Omega = R~=0
+    
 	[m, d1] = size(X);
 	[n, d2] = size(Y);
 	assert(size(R,1) == m & size(R,2) == n);
@@ -46,6 +48,8 @@ function [W, H, time] = IMC(R, X, Y, k, lambda, maxiter, WInit, HInit)
 	end
 	hessparams.lambda = lambda;
 	time = cputime();
+    
+    losses = zeros(2 * maxiter, 1);
 	for i=1:maxiter
 		%% Fix H and update W.
 		fprintf('Iter %d. Updating W. ', i);
@@ -58,6 +62,9 @@ function [W, H, time] = IMC(R, X, Y, k, lambda, maxiter, WInit, HInit)
 		hessparams.k = k;
  		w = CGD(W(:), Gradw(:), hessparams, maxiter); 	
  		W = reshape(w, d1, k);
+        
+        loss = computeLoss(R, X, W, H, Y, lambda, Omega);
+        losses(2 * i - 1) = loss;
 %         W  = W - 0.01*Gradw
 		%% Fix W and update H.
 		fprintf('Updating H.\n');
@@ -71,6 +78,9 @@ function [W, H, time] = IMC(R, X, Y, k, lambda, maxiter, WInit, HInit)
  		h = CGD(H(:), Gradh(:), hessparams, maxiter); 	
  		H = reshape(h, k, d2);
 % 		H = H - 0.01*Gradh
+
+        loss = computeLoss(R, X, W, H, Y, lambda, Omega);
+        losses(2 * i) = loss;
 	end
 	time = cputime() - time;
 	W = W';

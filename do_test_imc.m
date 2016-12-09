@@ -20,15 +20,15 @@ function [relerr] = do_test_imc(k, d1, d2, n1, n2, m)
 
 if nargin < 1, k  = 5;		end
 if nargin < 2, d1 = 50;		end
-if nargin < 3, d2 = 50;		end
-if nargin < 4, n1 = 100;	end
+if nargin < 3, d2 = 80;		end
+if nargin < 4, n1 = 120;	end
 if nargin < 5, n2 = 100;	end
-if nargin < 6, m  = 5000;	end
+if nargin < 6, m  = 1000;	end
 
 randstate = 1;
 
-lambda = 1e-6;
-maxiter = 10;
+lambda = 1e-3;
+maxiter = 100;
 
 % generate random data
 fprintf('Generating random data...');
@@ -37,10 +37,11 @@ W0 = randn(d1, k); H0 = randn(d2, k);
 fprintf('DONE!\n');
 
 % run IMC
-[W, H] = IMC_new(A, X, Y, k, lambda, maxiter, W0, H0);
+[W, H, losses] = IMC_new(A, X, Y, k, lambda, maxiter, W0, H0);
+plot(losses);
 
 relerr = norm(W'*H-Z,'fro')^2 / norm(Z,'fro')^2 * 100;
-fprintf('RelErr = %e\n',relerr);
+fprintf('RelErr = %f\n',relerr);
 
 end
 

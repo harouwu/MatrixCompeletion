@@ -1,4 +1,4 @@
-function [W, H, time] = IMC_new(R, X, Y, k, lambda, maxiter, WInit, HInit)
+function [W, H, losses] = IMC_new(R, X, Y, k, lambda, maxiter, WInit, HInit)
 % 
 % Inductive Matrix Completion (IMC) using squared loss: 
 %
@@ -28,7 +28,7 @@ function [W, H, time] = IMC_new(R, X, Y, k, lambda, maxiter, WInit, HInit)
 % For any questions and comments, please send your email to
 % Nagarajan Natarajan <naga86@cs.utexas.edu> or Donghyuk Shin <dshin@cs.utexas.edu>.
 %
-    Omega = R > 0;
+    Omega = R~=0;
 
 	[m, d1] = size(X);
 	[n, d2] = size(Y);
@@ -51,6 +51,8 @@ function [W, H, time] = IMC_new(R, X, Y, k, lambda, maxiter, WInit, HInit)
     hessparams.R = R;
     
 	time = cputime();
+    losses = zeros(2 * maxiter, 1);
+    
 	for i=1:maxiter
 		%% Fix H and update W.
 		fprintf('Iter %d. Updating W. ', i);
@@ -69,6 +71,9 @@ function [W, H, time] = IMC_new(R, X, Y, k, lambda, maxiter, WInit, HInit)
 		hessparams.k = k;
 		w = CGD(W(:), Gradw(:), hessparams, maxiter); 	
 		W = reshape(w, d1, k);
+        
+        loss = computeLoss(R, X, W, H, Y, lambda, Omega);
+        losses(2 * i - 1) = loss;
 
 		%% Fix W and update H.
 		fprintf('Updating H.\n');
@@ -88,19 +93,11 @@ function [W, H, time] = IMC_new(R, X, Y, k, lambda, maxiter, WInit, HInit)
 		h = CGD(H(:), Gradh(:), hessparams, maxiter); 	
 		H = reshape(h, k, d2);
 		
+        loss = computeLoss(R, X, W, H, Y, lambda, Omega);
+        losses(2 * i) = loss;
 	end
 	time = cputime() - time;
 	W = W';
-end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-function [loss] = computeLoss(R, X, W, M, lambda, Omega)
-    
-    P = X * W * M;
-    R(Omega) = R(Omega) - P(Omega);
-    loss = norm(R,'fro')^2 + lambda * norm(W,'fro')^2;
-
 end
 
 
@@ -119,7 +116,8 @@ function [w] = CGD(winit, gradw, hessparams, maxiter)
 	d = r;
 	tol = 1e-6;
 	w = winit;
-	for t=1:1
+
+	for t=1:10
 		if norm(r) <= tol, break; end	
 		r2 = r' * r;
         
@@ -134,8 +132,6 @@ function [w] = CGD(winit, gradw, hessparams, maxiter)
 		r = r - alpha * hd;
 		beta = r'*r / r2;
 		d = r + beta * d;
-        loss = computeLoss(hessparams.R, hessparams.X, reshape(w, hessparams.d, hessparams.k), ...
-            hessparams.M, hessparams.lambda, hessparams.Omega);
 	end
 end
 
