@@ -50,9 +50,9 @@ def CGD(winit, gradw, params, maxiter = 10):
 
 
 def computeLoss(R, X, W, H, Y, lamb, Omega):
-    P = X.dot(W).dot(H).dot(Y.T)
+    P = X.dot(W).dot(H).dot(Y.transpose())
     P[~Omega] = 0
-    loss = la.norm(P - R, 'fro')**2 + la.norm(W, 'fro')**2 + la.norm(H, 'fro')**2
+    loss = la.norm(P - R, 'fro')**2 + lamb * la.norm(W, 'fro')**2 + lamb * la.norm(H, 'fro')**2
     return loss
 
 
@@ -111,7 +111,7 @@ def IMC(R, X, Y, k, lamb, maxiter, WInit = None, HInit = None):
         w = CGD(W.flatten(), GradW.flatten(), params)
         W = np.reshape(w, (d1, k))
         losses[2 * i] = computeLoss(R, X, W, H, Y, lamb, Omega)
-
+        print losses[2 * i]
         print 'Updating W.'
         P = X.dot(W)
         PHY = P.dot(H).dot(Y.transpose())
