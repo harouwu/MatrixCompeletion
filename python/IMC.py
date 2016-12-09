@@ -95,6 +95,8 @@ def IMC(R, X, Y, k, lamb, maxiter, WInit = None, HInit = None):
     params.Omega = Omega
     params.R = R
 
+    losses = np.zeros(2 * maxiter)
+
     for i in xrange(maxiter):
         print 'Iter ' + str(i) + '. Updating W. ',
         Q = H.dot(Y.transpose())
@@ -108,6 +110,7 @@ def IMC(R, X, Y, k, lamb, maxiter, WInit = None, HInit = None):
         params.k = k
         w = CGD(W.flatten(), GradW.flatten(), params)
         W = np.reshape(w, (d1, k))
+        losses[2 * i] = computeLoss(R, X, W, H, Y, lamb, Omega)
 
         print 'Updating W.'
         P = X.dot(W)
@@ -121,8 +124,9 @@ def IMC(R, X, Y, k, lamb, maxiter, WInit = None, HInit = None):
         params.k = d2
         h = CGD(H.flatten(), GradH.flatten(), params)
         H = np.reshape(h, (k, d2))
+        losses[2 * i + 1] = computeLoss(R, X, W, H, Y, lamb, Omega)
 
-    return W.transpose(), H, 0
+    return W.transpose(), H, losses
 
 
 
