@@ -33,21 +33,27 @@ def CGD(winit, gradw, params, maxiter = 10):
         if la.norm(r) <= tol:
             break
 
-        r2 = r.inner(r)
+        r2 = r.T.dot(r)
         S = np.reshape(d, (params.d, params.k))
         U = params.P.dot(S).dot(params.Q)
         U[~params.Omega] = 0
         PUQ = params.P.transpose().dot(U).dot(params.Q.transpose())
         Hd = PUQ.flatten() + params.lamb * d
 
-        alpha = r2 / (d.inner(Hd))
+        alpha = r2 / (d.T.dot(Hd))
         w = w + alpha * d
         r = r - alpha * Hd
-        beta = r.inner(r) / r2
+        beta = r.T.dot(r) / r2
         d = r + beta * d
 
     return w
 
+
+def computeLoss(R, X, W, H, Y, lamb, Omega):
+    P = X.dot(W).dot(H).dot(Y.T)
+    P[~Omega] = 0
+    loss = la.norm(P - R, 'fro')**2 + la.norm(W, 'fro')**2 + la.norm(H, 'fro')**2
+    return loss
 
 
 def IMC(R, X, Y, k, lamb, maxiter, WInit = None, HInit = None):
@@ -113,7 +119,7 @@ def IMC(R, X, Y, k, lamb, maxiter, WInit = None, HInit = None):
         params.Q = Y.transpose()
         params.d = k
         params.k = d2
-        h = CGD(H.flattern(), GradH.flattern(), params)
+        h = CGD(H.flatten(), GradH.flatten(), params)
         H = np.reshape(h, (k, d2))
 
     return W.transpose(), H, 0
