@@ -38,7 +38,7 @@ fprintf('DONE!\n');
 
 % run IMC
 [W, H, losses] = IMC_new(A, X, Y, k, lambda, maxiter, W0, H0);
-plot(losses);
+semilogy(losses);
 
 relerr = norm(W'*H-Z,'fro')^2 / norm(Z,'fro')^2 * 100;
 fprintf('RelErr = %f\n',relerr);
