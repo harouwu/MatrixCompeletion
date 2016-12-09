@@ -3,7 +3,7 @@ from numpy import random
 from numpy.random import randn
 from numpy.linalg import qr
 from numpy.linalg import norm
-from scipy.sparse import csr_matrix
+from IMC import IMC
 
 def generate_synthesized_data(k, d1, d2, n1, n2, m, seed = None):
     """
@@ -56,7 +56,7 @@ def generate_synthesized_data(k, d1, d2, n1, n2, m, seed = None):
 
     return (X, Y, G, W)
 
-def do_test_imc(k = 5, d1 = 50, d2 = 80, n1 = 120, n2 = 100, m = 1000):
+def do_test_imc(k = 5, d1 = 50, d2 = 80, n1 = 120, n2 = 100, m = 1):
     seed = 1
     lamb = 1e-3
     maxiter = 100
@@ -65,12 +65,14 @@ def do_test_imc(k = 5, d1 = 50, d2 = 80, n1 = 120, n2 = 100, m = 1000):
     W0 = randn(d1, k)
     H0 = randn(d2, k)
     print 'Done!'
+    relerr = norm(W0.dot(H0.T) - Z, 'fro') ** 2 / norm(Z, 'fro') ** 2 * 100
+    print 'RelErr = %f' % (relerr)
 
 # Run IMC
-    W, H, losses = IMC_new(A, X, Y, k, lamb, maxiter, W0, H0)
+    W, H, losses = IMC(A, X, Y, k, lamb, maxiter, W0, H0)
     relerr = norm(W.T.dot(H) - Z, 'fro')**2 / norm(Z, 'fro')**2 * 100
-    print 'RelErr = %f'%(relerr)
+    print 'RelErr = %g'%(relerr)
     return relerr
 
 
-print generate_synthesized_data(2, 3, 4, 10, 11, 5)
+do_test_imc()
