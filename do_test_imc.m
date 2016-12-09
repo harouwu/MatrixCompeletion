@@ -33,15 +33,13 @@ maxiter = 10;
 % generate random data
 fprintf('Generating random data...');
 [X,Y,A,Z] = Rank1_dep_setup(k,d1,d2,n1,n2,m,randstate);
-[I,J,K] = find(A);
-M = sparse(I,J,true,n1,n2);
 W0 = randn(d1, k); H0 = randn(d2, k);
 fprintf('DONE!\n');
 
 % run IMC
-[W, H] = IMC(A, X, Y, k, lambda, maxiter, W0, H0);
+[W, H] = IMC_new(A, X, Y, k, lambda, maxiter, W0, H0);
 
-relerr = norm(X*W'*H*Y'-A,'fro')^2 / norm(A,'fro')^2 * 100;
+relerr = norm(W'*H-Z,'fro')^2 / norm(Z,'fro')^2 * 100;
 fprintf('RelErr = %e\n',relerr);
 
 end
