@@ -32,6 +32,15 @@ def generate_synthesized_data(k, d1, d2, n1, n2, m, seed = None):
 
     G = X.dot(W).dot(Y.T)
 
+    Omega = random.choice(range(n1*n2), m, replace=False)
+    mask = np.zeros(G.shape)
+    for ij in range(m):
+        i = np.floor(Omega[ij] / n2).astype(int)
+        j = (Omega[ij] - i * n2).astype(int)
+        mask[i, j] = 1.0
+
+    G *= mask
+
     # Omega = random.choice(range(n1*n2), m, replace=False)
     # ii = np.zeros((m,))
     # jj = np.zeros((m,))
