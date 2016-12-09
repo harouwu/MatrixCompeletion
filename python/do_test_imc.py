@@ -2,7 +2,7 @@ import numpy as np
 from numpy import random
 from numpy.random import randn
 from numpy.linalg import qr
-from numpy.linalg import 
+from numpy.linalg import norm
 from scipy.sparse import csr_matrix
 
 def generate_synthesized_data(k, d1, d2, n1, n2, m, seed = None):
@@ -30,18 +30,20 @@ def generate_synthesized_data(k, d1, d2, n1, n2, m, seed = None):
     X, _ = qr(X)
     Y, _ = qr(Y)
 
-    Omega = random.choice(range(n1*n2), m, replace=False)
-    ii = np.zeros((m,))
-    jj = np.zeros((m,))
-    b = np.zeros((m,))
-    for ij in range(m):
-        i = np.floor(Omega[ij] / n2).astype(int)
-        ii[ij] = i
-        j = (Omega[ij] - i * n2).astype(int)
-        jj[ij] = j
-        b[ij] = X[i, :].dot(W).dot(Y[j,:].T)
+    G = X.dot(W).dot(Y.T)
 
-    G = csr_matrix((b, (ii, jj)), shape=(n1, n2))
+    # Omega = random.choice(range(n1*n2), m, replace=False)
+    # ii = np.zeros((m,))
+    # jj = np.zeros((m,))
+    # b = np.zeros((m,))
+    # for ij in range(m):
+    #     i = np.floor(Omega[ij] / n2).astype(int)
+    #     ii[ij] = i
+    #     j = (Omega[ij] - i * n2).astype(int)
+    #     jj[ij] = j
+    #     b[ij] = X[i, :].dot(W).dot(Y[j,:].T)
+
+    # G = csr_matrix((b, (ii, jj)), shape=(n1, n2))
 
     return (X, Y, G, W)
 
