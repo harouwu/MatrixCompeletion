@@ -65,6 +65,8 @@ def generate_synthesized_noisy_data(k, d1, d2, n1, n2, sparsity, noise_level, se
     """
 
     m = int(round(sparsity * (n1 * n2)))
+    t1 = int(round(noise_level * d1))
+    t2 = int(round(noise_level * d2))
 
     random.seed(seed)
     W = randn(d1, k).dot(randn(k, d2))
@@ -77,6 +79,19 @@ def generate_synthesized_noisy_data(k, d1, d2, n1, n2, sparsity, noise_level, se
     Y, _ = qr(Y)
 
     A = X.dot(W).dot(Y.T)
+
+    if t1 > 0:
+        U, S, V = svd(X)
+        N = U[:, d1:]
+        I = random.choice(range(d1), t1, replace=False)
+        X[:, I] = N[:, :t1]
+
+    if t1 > 0:
+        U, S, V = svd(Y)
+        N = U[:, d2:]
+        I = random.choice(range(d2), t2, replace=False)
+        Y[:, I] = N[:, :t2]
+
 
     Omega = random.choice(range(n1 * n2), m, replace=False)
     mask = np.zeros(A.shape)
