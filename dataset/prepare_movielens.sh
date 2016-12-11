@@ -10,3 +10,4 @@ fi
 cd movie_lens
 
 unzip ml-20m.zip
+rm -f ml-20m.zip
