@@ -7,12 +7,11 @@ from CGD import *
 def computeLoss(R, X, W, H, Y, lamb, Omega):
     P = X.dot(W).dot(H).dot(Y.transpose())
     P[~Omega] = 0
-    loss = la.norm(P - R, 'fro')**2 + lamb * la.norm(W, 'fro')**2 + lamb * la.norm(H, 'fro')**2
+    loss = la.norm(P - R, 'fro') ** 2 + lamb * la.norm(W, 'fro') ** 2 + lamb * la.norm(H, 'fro') ** 2
     return loss
 
 
-def IMC(R, X, Y, k, lamb, maxiter, WInit = None, HInit = None):
-
+def IMC(R, X, Y, k, lamb, maxiter, WInit=None, HInit=None):
     """
         Inductive Matrix Completion using squared loss:
             min_{W,H} \| R - X * W' * H * Y' \|_F^2 + \lambda * (\|W\|_F^2 + \|H\|_F^2)
@@ -31,9 +30,9 @@ def IMC(R, X, Y, k, lamb, maxiter, WInit = None, HInit = None):
     :return losses: store losses after each update. (2maxiter) * 1
     """
 
-    Omega = R!=0
-    m, d1 = X.shape;
-    n, d2 = Y.shape;
+    Omega = R != 0
+    m, d1 = X.shape
+    n, d2 = Y.shape
 
     if WInit is None:
         W = random.randn([d1, k])
@@ -82,9 +81,3 @@ def IMC(R, X, Y, k, lamb, maxiter, WInit = None, HInit = None):
         losses[2 * i + 1] = computeLoss(R, X, W, H, Y, lamb, Omega)
 
     return W.transpose(), H, losses
-
-
-
-
-
-

@@ -7,12 +7,11 @@ from CGD import *
 def computeLoss(R, X, W, H, Y, U, V, lamb1, lamb2, Omega):
     P = X.dot(W).dot(H).dot(Y.T) + U.dot(V)
     P[~Omega] = 0
-    loss = la.norm(P - R, 'fro')**2 + lamb1 * la.norm(W, 'fro')**2 + lamb2 * la.norm(H, 'fro')**2
+    loss = la.norm(P - R, 'fro') ** 2 + lamb1 * la.norm(W, 'fro') ** 2 + lamb2 * la.norm(H, 'fro') ** 2
     return loss
 
 
-def dirtyIMC(R, X, Y, k1, k2, lamb1, lamb2, maxiter, WInit = None, HInit = None, UInit = None, VInit = None):
-
+def dirtyIMC(R, X, Y, k1, k2, lamb1, lamb2, maxiter, WInit=None, HInit=None, UInit=None, VInit=None):
     """
         Dirty Inductive Matrix Completion using squared loss:
             min_{W,H} \| R - X * W' * H * Y' - U' * V \|_F^2 + \lambda_1 * (\|W\|_F^2 + \|H\|_F^2) + \lambda_2 * (\|U\|_F^2 + \|V\|_F^2)
@@ -35,7 +34,7 @@ def dirtyIMC(R, X, Y, k1, k2, lamb1, lamb2, maxiter, WInit = None, HInit = None,
     :return losses: store losses after each update. (4maxiter) * 1
     """
 
-    Omega = R!=0
+    Omega = R != 0
     m, d1 = X.shape;
     n, d2 = Y.shape;
 
@@ -65,7 +64,6 @@ def dirtyIMC(R, X, Y, k1, k2, lamb1, lamb2, maxiter, WInit = None, HInit = None,
     losses = np.zeros(4 * maxiter)
 
     for i in xrange(maxiter):
-
         # print 'Iter ' + str(i) + '. Updating W. ',
         UV = U.dot(V)
         Q = H.dot(Y.T)
@@ -125,9 +123,3 @@ def dirtyIMC(R, X, Y, k1, k2, lamb1, lamb2, maxiter, WInit = None, HInit = None,
         losses[4 * i + 3] = computeLoss(R, X, W, H, Y, U, V, lamb1, lamb2, Omega)
 
     return W.transpose(), H, U.transpose(), V, losses
-
-
-
-
-
-

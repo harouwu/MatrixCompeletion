@@ -11,7 +11,7 @@ class CGDParams:
     k = None
 
 
-def CGD(winit, gradw, params, maxiter = 10):
+def CGD(winit, gradw, params, maxiter=10):
     """
         Conjugate gradient descent for IMC
 
@@ -22,10 +22,10 @@ def CGD(winit, gradw, params, maxiter = 10):
     :return w: vectorized version of W.
     """
 
-    r = -gradw;
-    d = r.copy();
-    tol = 1e-6;
-    w = winit.copy();
+    r = -gradw
+    d = r.copy()
+    tol = 1e-6
+    w = winit.copy()
 
     for i in xrange(maxiter):
         if la.norm(r) <= tol:

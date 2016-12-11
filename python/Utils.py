@@ -92,7 +92,6 @@ def generate_synthesized_noisy_data(k, d1, d2, n1, n2, sparsity, noise_level, se
         I = random.choice(range(d2), t2, replace=False)
         Y[:, I] = N[:, :t2]
 
-
     Omega = random.choice(range(n1 * n2), m, replace=False)
     mask = np.zeros(A.shape)
     for ij in range(m):
