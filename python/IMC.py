@@ -80,4 +80,7 @@ def IMC(R, X, Y, k, lamb, maxiter, WInit=None, HInit=None):
         H = np.reshape(h, (k, d2))
         losses[2 * i + 1] = computeLoss(R, X, W, H, Y, lamb, Omega)
 
+        if i > 0 and losses[2*i+1] - losses[2*i-1] < 1e-3:
+            break
+
     return W.transpose(), H, losses

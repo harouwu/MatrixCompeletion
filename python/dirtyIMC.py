@@ -122,4 +122,7 @@ def dirtyIMC(R, X, Y, k1, k2, lamb1, lamb2, maxiter, WInit=None, HInit=None, UIn
         V = np.reshape(v, (k2, n))
         losses[4 * i + 3] = computeLoss(R, X, W, H, Y, U, V, lamb1, lamb2, Omega)
 
+        if i > 0 and losses[4 * i + 3] - losses[4 * i - 1] < 1e-3:
+            break
+
     return W.transpose(), H, U.transpose(), V, losses
