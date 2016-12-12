@@ -22,9 +22,10 @@ def do_test_imc(k=20, d1=40, d2=40, n1=200, n2=200, sparsity=0.3, noisy_level=0.
     # relerr = norm(W.T.dot(H) - Z, 'fro')**2 / norm(Z, 'fro')**2 * 100
     relerr = norm(X.dot(W.T).dot(H).dot(Y.T) - A, 'fro') ** 2 / norm(A, 'fro') ** 2 * 100
     print 'IMC RelErr = %g' % (relerr)
-    # plt.plot(losses)
-    # plt.yscale('log')
-    # plt.show()
+    plt.plot(losses)
+    plt.yscale('log')
+    plt.title("IMC")
+    plt.show()
 
     return relerr
 
@@ -49,9 +50,10 @@ def do_test_dirty_imc(k1=20, k2=20, d1=40, d2=40, n1=200, n2=200, sparsity=0.3, 
 
     relerr = norm(Diff, 'fro') ** 2 / norm(A, 'fro') ** 2 * 100
     print 'dirtyIMC RelErr = %g' % (relerr)
-    # plt.plot(losses)
-    # plt.yscale('log')
-    # plt.show()
+    plt.plot(losses)
+    plt.yscale('log')
+    plt.title("DirtyIMC")
+    plt.show()
 
     return relerr
 
