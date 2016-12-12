@@ -52,7 +52,7 @@ def IMC(R, X, Y, k, lamb, maxiter, WInit=None, HInit=None):
     losses = np.zeros(2 * maxiter)
 
     for i in xrange(maxiter):
-        # print 'Iter ' + str(i) + '. Updating W. ',
+        print 'Iter ' + str(i) + '. Updating W. ',
         Q = H.dot(Y.transpose())
         XWQ = X.dot(W).dot(Q)
         XWQ[~Omega] = 0
